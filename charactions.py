@@ -17,7 +17,7 @@ def dmgGen():
 
 def healGen():
     while True:
-        heal = random.randint(1,5)
+        heal = random.randint(1,10)
         yield heal
 
 def dmg():
