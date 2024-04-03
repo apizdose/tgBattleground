@@ -1,6 +1,7 @@
 import random
 
 characters={}
+charlist=[]
 
 def charGen(name):
     tmpdict={}
