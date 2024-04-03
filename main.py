@@ -84,7 +84,7 @@ def heal(message):
     heal=charactions.heal()
     charactions.restore(username,heal)
 
-    bot.reply_to(message, f"@{username} восстанавливает здоровье. @{username} запас здоровья и маны: {charactions.characters[username]['hp']}-hp, {charactions.characters[username]['mp']}-mp")
+    bot.reply_to(message, f"@{username} восстанавливает здоровье на {heal}. @{username} запас здоровья и маны: {charactions.characters[username]['hp']}-hp, {charactions.characters[username]['mp']}-mp")
 
 
 
