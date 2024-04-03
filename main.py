@@ -1,8 +1,9 @@
 import charactions
 import telebot
 from telebot import types
+import time
 
-bot = telebot.TeleBot('YOUR TOKEN')
+bot = telebot.TeleBot('TOKEN')
 
 @bot.message_handler(commands=["join"])
 def join(message):
@@ -14,6 +15,7 @@ def join(message):
     markup.add(item1)	
     markup.add(item2)
     charactions.charGen(username)
+    charactions.charlist.append(username)
 
     bot.send_message(chat_id=chat_id,text=f"@{username} в игре. Стартовый запас здоровья и маны: {charactions.characters[username]['hp']}-hp, {charactions.characters[username]['mp']}-mp",reply_markup=markup)
 
@@ -37,18 +39,39 @@ def dmg(message):
 @bot.message_handler(commands=["attack:"])
 def attack(message):
     username = message.from_user.username
-    msg=str(message.text)
-    enemy=msg.split(maxsplit=1)[1]
-    markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1=types.KeyboardButton("/dmg")
-    item2=types.KeyboardButton("/heal")
-    markup.add(item1)	
-    markup.add(item2)
-    bot.reply_to(message,'Атака!!!',reply_markup=markup)
-    dmg=charactions.dmg()
-    charactions.hit(enemy,dmg)
+    print(charactions.charlist)
+    
+    if charactions.charlist[0] == username:
+        action=charactions.charlist.pop()
+        msg=str(message.text)
+        enemy=msg.split(maxsplit=1)[1]
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1=types.KeyboardButton("/dmg")
+        item2=types.KeyboardButton("/heal")
+        markup.add(item1)	
+        markup.add(item2)
+        bot.reply_to(message,f'@{username} Атакует!!!',reply_markup=markup)
+        dmg=charactions.dmg()
+        charactions.hit(enemy,dmg)
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1=types.KeyboardButton("waiting...")
+        markup.add(item1)	
 
-    bot.reply_to(message, f"@{username} наносит {dmg} урона {enemy}. Здоровье @{enemy} теперь равно: {charactions.characters[enemy]['hp']}",reply_markup=markup)
+        bot.reply_to(message, f"@{username} наносит {dmg} урона {enemy}. Здоровье @{enemy} теперь равно: {charactions.characters[enemy]['hp']}",reply_markup=markup)
+        charactions.charlist.append(action)
+        time.sleep(5)
+
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1=types.KeyboardButton("/dmg")
+        item2=types.KeyboardButton("/heal")
+        markup.add(item1)	
+        markup.add(item2)
+        bot.send_message(chat_id=message.chat.id,text=f"Теперь ход @{charactions.charlist[0]}",reply_markup=markup)
+    else:
+        bot.reply_to(message, f"{username}, не твоя очередь, сейчас ход @{action}")
+
+    
+    
 
 @bot.message_handler(commands=["heal"])
 def heal(message):
